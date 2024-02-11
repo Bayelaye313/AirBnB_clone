@@ -49,3 +49,8 @@ class BaseModel:
         obj_dict['created_at'] = self.created_at.isoformat()
         obj_dict['updated_at'] = self.updated_at.isoformat()
         return obj_dict
+    @classmethod
+    def all(cls):
+        """Returns a dictionary of all instances of the class."""
+        return {k: v for k, v in models.storage.all().items() if isinstance(v, cls)}
+
