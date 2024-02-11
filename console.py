@@ -106,8 +106,10 @@ class HBNBCommand(cmd.Cmd):
                 for key, value in obj_store.items()
                 if key.split('.')[0] == class_name
             }
+            if not obj_store:
+                print("[]")
+                return
         print([str(value) for value in obj_store.values()])
-
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and
         id (save the change into the JSON file)
