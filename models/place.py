@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """Defines the Place class."""
-import models
 from models.base_model import BaseModel
 
 
@@ -20,10 +19,6 @@ class Place(BaseModel):
         longitude (float): The longitude of the place.
         amenity_ids (list): A list of Amenity ids.
     """
-    @classmethod
-    def all(cls):
-        """Returns a dictionary of all instances of the class."""
-        return {k: v for k, v in models.storage.all().items() if isinstance(v, cls)}
 
     city_id = ""
     user_id = ""
