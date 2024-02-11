@@ -2,27 +2,34 @@
 """Defines the FileStorage class."""
 import json
 
+
 class FileStorage:
-    """Handles serialization and deserialization of instances to and from JSON."""
-    
+    """Handles serialization and deserialization
+    of instances to and from JSON.
+    """
+
     __file_path = "file.json"
     __objects = {}
-    
+
     def all(self):
         """Returns a dictionary of all stored objects."""
         return self.__objects
-    
+
     def new(self, obj):
         """Stores a new object."""
         key = "{}.{}".format(obj.__class__.__name__, obj.id)
         self.__objects[key] = obj
-    
+
     def save(self):
         """Serializes objects to JSON and writes to file."""
-        objects_dict = {key: val.to_dict() for key, val in self.__objects.items()}
+        objects_dict = {
+            key: val.to_dict()
+            for key, val in self.__objects.items()
+        }
+
         with open(self.__file_path, 'w') as file:
             json.dump(objects_dict, file)
-            
+
     def reload(self):
         """Deserializes JSON file to objects."""
         try:
