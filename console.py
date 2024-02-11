@@ -120,6 +120,63 @@ class HBNBCommand(cmd.Cmd):
             del obj_store[obj_key]
             storage.save()
 
+    def do_update(self, arg):
+        """Updates an instance based on the class name and id by adding
+        or updating attribute
+        (save the change into the JSON file).
+        Usage: update <class name> <id> <attribute name> "<attribute value>"
+        """
+        args = arg.split()
+        if not args:
+            print("** class name missing **")
+            return
+
+        class_name = args[0]
+        if class_name not in ["BaseModel"]:
+            print("** class doesn't exist **")
+            return
+
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+
+        obj_id = args[1]
+        obj_store = storage.all()
+        obj_key = "{}.{}".format(class_name, obj_id)
+        if obj_key not in obj_store:
+            print("** no instance found **")
+            return
+
+        if len(args) < 4:
+            print("** attribute name missing **")
+            return
+
+        attr_name = args[2]
+        if len(args) < 5:
+            print("** value missing **")
+            return
+
+        attr_value = args[3]
+        obj_instance = obj_store[obj_key]
+        # Check if attribute name is valid (exists for this model)
+        if hasattr(obj_instance, attr_name):
+            # Check if the attribute is updatable
+            if attr_name not in ["id", "created_at", "updated_at"]:
+                # Cast the attribute value to the attribute type
+                attr_type = type(getattr(obj_instance, attr_name))
+                try:
+                    casted_value = attr_type(attr_value)
+                except ValueError:
+                    print("** invalid value **")
+                    return
+                # Update the attribute value
+                setattr(obj_instance, attr_name, casted_value)
+                obj_instance.save()
+            else:
+                print("** attribute can't be updated **")
+        else:
+            print("** attribute name doesn't exist **")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
