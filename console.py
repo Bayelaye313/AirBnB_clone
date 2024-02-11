@@ -17,7 +17,7 @@ class HBNBCommand(cmd.Cmd):
     Attributes:
         prompt (str): The command prompt.
     """
-    prompt = "(hbnb)"
+    prompt = "(hbnb) "
 
     __classes = {
         "BaseModel",
@@ -137,61 +137,54 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
 
     def do_update(self, arg):
-        """Updates an instance based on the class name and id by adding
-        or updating attribute
-        (save the change into the JSON file).
-        Usage: update <class name> <id> <attribute name> "<attribute value>"
+        """Usage: update <class> <id> <attribute_name> <attribute_value> or
+        <class>.update(<id>, <attribute_name>, <attribute_value>) or
+        <class>.update(<id>, <dictionary>)
+            Update a class instance of a given id by adding or updating
+            a given attribute key/value pair or dictionary.
         """
-        args = arg.split()
-        if not args:
+        argl = arg.split()
+        objdict = storage.all()
+
+        if len(argl) == 0:
             print("** class name missing **")
-            return
-
-        class_name = args[0]
-        if class_name not in self.__classes:
+            return False
+        if argl[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
-            return
-
-        if len(args) < 2:
+            return False
+        if len(argl) == 1:
             print("** instance id missing **")
-            return
-
-        obj_id = args[1]
-        obj_store = storage.all()
-        obj_key = "{}.{}".format(class_name, obj_id)
-        if obj_key not in obj_store:
+            return False
+        if "{}.{}".format(argl[0], argl[1]) not in objdict.keys():
             print("** no instance found **")
-            return
-
-        if len(args) < 4:
+            return False
+        if len(argl) == 2:
             print("** attribute name missing **")
-            return
+            return False
+        if len(argl) == 3:
+            try:
+                type(eval(argl[2])) != dict
+            except NameError:
+                print("** value missing **")
+                return False
 
-        attr_name = args[2]
-        if len(args) < 5:
-            print("** value missing **")
-            return
-
-        attr_value = args[3]
-        obj_instance = obj_store[obj_key]
-        # Check if attribute name is valid (exists for this model)
-        if hasattr(obj_instance, attr_name):
-            # Check if the attribute is updatable
-            if attr_name not in ["id", "created_at", "updated_at"]:
-                # Cast the attribute value to the attribute type
-                attr_type = type(getattr(obj_instance, attr_name))
-                try:
-                    casted_value = attr_type(attr_value)
-                except ValueError:
-                    print("** invalid value **")
-                    return
-                # Update the attribute value
-                setattr(obj_instance, attr_name, casted_value)
-                obj_instance.save()
+        if len(argl) == 4:
+            obj = objdict["{}.{}".format(argl[0], argl[1])]
+            if argl[2] in obj.__class__.__dict__.keys():
+                valtype = type(obj.__class__.__dict__[argl[2]])
+                obj.__dict__[argl[2]] = valtype(argl[3])
             else:
-                print("** attribute can't be updated **")
-        else:
-            print("** attribute name doesn't exist **")
+                obj.__dict__[argl[2]] = argl[3]
+        elif type(eval(argl[2])) == dict:
+            obj = objdict["{}.{}".format(argl[0], argl[1])]
+            for k, v in eval(argl[2]).items():
+                if (k in obj.__class__.__dict__.keys() and
+                        type(obj.__class__.__dict__[k]) in {str, int, float}):
+                    valtype = type(obj.__class__.__dict__[k])
+                    obj.__dict__[k] = valtype(v)
+                else:
+                    obj.__dict__[k] = v
+        storage.save()
 
 
 if __name__ == '__main__':
