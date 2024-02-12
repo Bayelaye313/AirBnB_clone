@@ -85,6 +85,7 @@ class HBNBCommand(cmd.Cmd):
         obj_id = args[1]
         obj_store = storage.all()
         obj_key = "{}.{}".format(class_name, obj_id)
+        print(obj_store)
         if obj_key not in obj_store:
             print("** no instance found **")
             return

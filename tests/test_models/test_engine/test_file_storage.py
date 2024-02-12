@@ -57,9 +57,9 @@ class TestFileStorage_methods(unittest.TestCase):
         rv = Review()
         models = [bm, us, st, pl, cy, am, rv]
         for model in models:
-            models.storage.new(model)
+            storage.new(model)
         for model in models:
-            self.assertIn(model, models.storage.all().values())
+            self.assertIn(model, storage.all().values())
 
     def test_save_reload(self):
         bm = BaseModel()
@@ -71,11 +71,11 @@ class TestFileStorage_methods(unittest.TestCase):
         rv = Review()
         models = [bm, us, st, pl, cy, am, rv]
         for model in models:
-            models.storage.new(model)
-        models.storage.save()
+            storage.new(model)
+        storage.save()
         storage.reload()
         for model in models:
-            self.assertIn(model, models.storage.all().values())
+            self.assertIn(model, storage.all().values())
     def test_save(self):
         """Test that save method updates the updated_at attribute."""
         model = BaseModel()
