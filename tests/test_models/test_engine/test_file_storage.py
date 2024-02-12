@@ -76,6 +76,13 @@ class TestFileStorage_methods(unittest.TestCase):
         storage.reload()
         for model in models:
             self.assertIn(model, models.storage.all().values())
+    def test_save(self):
+        """Test that save method updates the updated_at attribute."""
+        model = BaseModel()
+        old_updated_at = model.updated_at
+        model.save()
+        new_updated_at = model.updated_at
+        self.assertNotEqual(old_updated_at, new_updated_at)    
 
 
 if __name__ == "__main__":
