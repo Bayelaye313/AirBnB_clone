@@ -54,9 +54,9 @@ class HBNBCommand(cmd.Cmd):
         """Creates a new instance of BaseModel, saves it (to the JSON file) and
         prints the id.
         """
-        if(not args):
+        if not args:
             print('** class name missing **')
-        elif(args not in self.__classes):
+        elif args not in self.__classes:
             print("** class doesn't exist **")
         else:
             newModel = BaseModel()
