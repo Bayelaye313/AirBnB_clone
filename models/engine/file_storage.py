@@ -51,6 +51,19 @@ class FileStorage:
                 for obj_dict in objects_dict.values():
                     cls_name = obj_dict["__class__"]
                     del obj_dict["__class__"]
-                    self.new(eval(cls_name)(**obj_dict))
+                    if cls_name == "BaseModel":
+                        self.new(BaseModel(**obj_dict))
+                    elif cls_name == "User":
+                        self.new(User(**obj_dict))
+                    elif cls_name == "State":
+                        self.new(State(**obj_dict))
+                    elif cls_name == "City":
+                        self.new(City(**obj_dict))
+                    elif cls_name == "Place":
+                        self.new(Place(**obj_dict))
+                    elif cls_name == "Amenity":
+                        self.new(Amenity(**obj_dict))
+                    elif cls_name == "Review":
+                        self.new(Review(**obj_dict))
         except FileNotFoundError:
             pass
