@@ -83,6 +83,14 @@ class TestFileStorage_methods(unittest.TestCase):
         model.save()
         new_updated_at = model.updated_at
         self.assertNotEqual(old_updated_at, new_updated_at)    
+    def test_reload(self):
+        """Test that reload method reloads objects from JSON file."""
+        # Supprimer le fichier JSON pour simuler une situation où il n'existe pas
+        os.remove("file.json")
+
+        # Appeler la méthode reload() et s'attendre à ce qu'elle échoue
+        with self.assertRaises(FileNotFoundError):
+            storage.reload()
 
 
 if __name__ == "__main__":
