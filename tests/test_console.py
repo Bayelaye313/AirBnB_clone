@@ -199,6 +199,14 @@ class TestHBNBCommand_show(unittest.TestCase):
         self.helper_test_show("Review", None, "Review.show()")
 
     def test_show_no_instance_found_space_notation(self):
+        # Créez un objet BaseModel pour chaque test
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("create BaseModel"))
+            test_id = output.getvalue().strip()
+
+        # Vérifiez que l'objet a été créé avec succès
+        self.assertIn("BaseModel.{}".format(test_id), FileStorage.__objects.keys())
+        # Testez l'affichage de l'objet nouvellement créé
         self.helper_test_show("BaseModel", "1", "show BaseModel 1")
         self.helper_test_show("User", "1", "show User 1")
         self.helper_test_show("State", "1", "show State 1")
@@ -320,6 +328,7 @@ class TestHBNBCommand_destroy(unittest.TestCase):
                 with patch("sys.stdout", new=StringIO()) as output:
                     self.command.onecmd(destroy_cmd)
                     self.assertNotIn(obj_key, storage.all())
+                    self.assertNotIn(test_id, storage.all().keys())
                     self.assertEqual(test_case["expected_output"],
                                      output.getvalue().strip())
 
@@ -403,6 +412,8 @@ class TestHBNBCommand_all(unittest.TestCase):
                     self.command.onecmd("all {}".format(test_case["class"]))
                     self.assertIn(test_case["class"],
                                   output.getvalue().strip())
+                    obj_id = output.getvalue().strip().split()[0]
+                    self.assertIn(obj_id, storage.all().keys())
 
     def run_test_cases(self, test_cases):
         for test_case in test_cases:
@@ -491,6 +502,8 @@ class TestHBNBCommand_update(unittest.TestCase):
         with patch("sys.stdout", new=StringIO()) as output:
             self.command.onecmd("create BaseModel")
             test_id = output.getvalue().strip()
+            self.assertIn("BaseModel.{}".format(test_id),
+                          FileStorage.__objects.keys())
         with patch("sys.stdout", new=StringIO()) as output:
             self.command.onecmd("update BaseModel {} "
                                 "name \"value\"".format(test_id))
