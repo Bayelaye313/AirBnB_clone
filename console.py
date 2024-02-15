@@ -78,7 +78,6 @@ class HBNBCommand(cmd.Cmd):
         obj_id = args[1]
         obj_store = storage.all()
         obj_key = "{}.{}".format(class_name, obj_id)
-        print(obj_store)
         if obj_key not in obj_store:
             print("** no instance found **")
             return
@@ -89,7 +88,7 @@ class HBNBCommand(cmd.Cmd):
         not on the class name.
         """
         class_name = arg.split()[0] if arg else None
-        if class_name and class_name not in self.__classes:
+        if class_name and class_name not in self.__class:
             print("** class doesn't exist **")
             return
 
