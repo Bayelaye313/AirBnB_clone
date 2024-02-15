@@ -20,8 +20,8 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
 
     __class = {"BaseModel": BaseModel, "User": User, "State": State,
-                "City": City, "Amenity": Amenity, "Place": Place,
-                "Review": Review}
+               "City": City, "Amenity": Amenity, "Place": Place,
+               "Review": Review}
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -45,7 +45,8 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """Creates a new instance of a class, saves it to the JSON file, and prints the id."""
+        """Creates a new instance of a class, saves it to the JSON file,
+        and prints the id."""
         if not args:
             print('** class name missing **')
         elif args not in self.__class:
