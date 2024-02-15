@@ -19,15 +19,9 @@ class HBNBCommand(cmd.Cmd):
     """
     prompt = "(hbnb) "
 
-    __classes = {
-        "BaseModel",
-        "User",
-        "State",
-        "City",
-        "Place",
-        "Amenity",
-        "Review"
-    }
+    __class = {"BaseModel": BaseModel, "User": User, "State": State,
+                "City": City, "Amenity": Amenity, "Place": Place,
+                "Review": Review}
 
     def do_quit(self, arg):
         """Quit command to exit the program"""
@@ -51,17 +45,15 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """Creates a new instance of BaseModel, saves it (to the JSON file) and
-        prints the id.
-        """
+        """Creates a new instance of a class, saves it to the JSON file, and prints the id."""
         if not args:
             print('** class name missing **')
-        elif args not in self.__classes:
+        elif args not in self.__class:
             print("** class doesn't exist **")
         else:
-            newModel = BaseModel()
-            newModel.save()
-            print(newModel.id)
+            new_instance = self.__class[args]()  # Instantiate the class
+            new_instance.save()  # Save the instance
+            print(new_instance.id)  # Print the instance id
 
     def help_create(self):
         """Help documentation for the create command."""
@@ -76,7 +68,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in self.__classes:
+        if class_name not in self.__class:
             print("** class doesn't exist **")
             return
         if len(args) == 1:
@@ -119,7 +111,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         class_name = args[0]
-        if class_name not in self.__classes:
+        if class_name not in self.__class:
             print("** class doesn't exist **")
             return
 
@@ -150,7 +142,7 @@ class HBNBCommand(cmd.Cmd):
         if len(argl) == 0:
             print("** class name missing **")
             return False
-        if argl[0] not in HBNBCommand.__classes:
+        if argl[0] not in HBNBCommand.__class:
             print("** class doesn't exist **")
             return False
         if len(argl) == 1:
