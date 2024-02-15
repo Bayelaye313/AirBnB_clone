@@ -49,7 +49,7 @@ class HBNBCommand(cmd.Cmd):
         and prints the id."""
         if not args:
             print('** class name missing **')
-        elif args not in self.__class:
+        elif args not in self.__classes:
             print("** class doesn't exist **")
         else:
             new_instance = self.__class[args]()  # Instantiate the class
@@ -69,7 +69,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in self.__class:
+        if class_name not in self.__classes:
             print("** class doesn't exist **")
             return
         if len(args) == 1:
@@ -87,19 +87,13 @@ class HBNBCommand(cmd.Cmd):
         """Prints all string representation of all instances based or
         not on the class name.
         """
-        class_name = arg.split()[0] if arg else None
-        if class_name and class_name not in self.__class:
+        class_name = arg.split('.')[0] if '.' in arg else arg
+        if class_name not in self.__classes:
             print("** class doesn't exist **")
             return
 
-        obj_store = storage.all()
-        if class_name:
-            obj_store = {
-                key: value
-                for key, value in obj_store.items()
-                if key.split('.')[0] == class_name
-            }
-        print([str(value) for value in obj_store.values()])
+        instances = self.__classes[class_name].all()
+        print([str(instance) for instance in instances])
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and
@@ -111,7 +105,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         class_name = args[0]
-        if class_name not in self.__class:
+        if class_name not in self.__classes:
             print("** class doesn't exist **")
             return
 
@@ -142,7 +136,7 @@ class HBNBCommand(cmd.Cmd):
         if len(argl) == 0:
             print("** class name missing **")
             return False
-        if argl[0] not in HBNBCommand.__class:
+        if argl[0] not in HBNBCommand.__classes:
             print("** class doesn't exist **")
             return False
         if len(argl) == 1:
