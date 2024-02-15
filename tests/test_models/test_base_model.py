@@ -88,7 +88,8 @@ class TestBaseModel_str(unittest.TestCase):
     def test_str_output(self):
         """Test the string representation of the BaseModel instance."""
         test_instance = BaseModel()
-        expected_output = "[BaseModel] ({}) {}".format(test_instance.id, test_instance.__dict__)
+        expected_output = "[BaseModel] ({}) {}".format(test_instance.id,
+                                                       test_instance.__dict__)
         self.assertEqual(str(test_instance), expected_output)
 
 

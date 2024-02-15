@@ -205,7 +205,8 @@ class TestHBNBCommand_show(unittest.TestCase):
             test_id = output.getvalue().strip()
 
         # Vérifiez que l'objet a été créé avec succès
-        self.assertIn("BaseModel.{}".format(test_id), FileStorage.__objects.keys())
+        self.assertIn("BaseModel.{}".format(test_id),
+                      FileStorage.__objects.keys())
         # Testez l'affichage de l'objet nouvellement créé
         self.helper_test_show("BaseModel", "1", "show BaseModel 1")
         self.helper_test_show("User", "1", "show User 1")
