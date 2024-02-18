@@ -19,7 +19,7 @@ class HBNBCommand(cmd.Cmd):
     """
     prompt = "(hbnb) "
 
-    __class = {"BaseModel": BaseModel, "User": User, "State": State,
+    class_dict = {"BaseModel": BaseModel, "User": User, "State": State,
                "City": City, "Amenity": Amenity, "Place": Place,
                "Review": Review}
 
@@ -49,10 +49,10 @@ class HBNBCommand(cmd.Cmd):
         and prints the id."""
         if not args:
             print('** class name missing **')
-        elif args not in self.__classes:
+        elif args not in self.class_dict:
             print("** class doesn't exist **")
         else:
-            new_instance = self.__class[args]()  # Instantiate the class
+            new_instance = self.class_dict[args]()  # Instantiate the class
             new_instance.save()  # Save the instance
             print(new_instance.id)  # Print the instance id
 
@@ -69,7 +69,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         class_name = args[0]
-        if class_name not in self.__classes:
+        if class_name not in self.class_dict:
             print("** class doesn't exist **")
             return
         if len(args) == 1:
@@ -84,16 +84,24 @@ class HBNBCommand(cmd.Cmd):
         print(obj_store[obj_key])
 
     def do_all(self, arg):
-        """Prints all string representation of all instances based or
-        not on the class name.
-        """
-        class_name = arg.split('.')[0] if '.' in arg else arg
-        if class_name not in self.__classes:
-            print("** class doesn't exist **")
-            return
-
-        instances = self.__classes[class_name].all()
-        print([str(instance) for instance in instances])
+            'Show all instances based on class name.'
+            my_arg = arg.split(" ")
+            if not arg:
+                my_list = []
+                my_objects = storage.all()
+                for key, values in my_objects.items():
+                    my_list.append(str(values))
+                print(my_list)
+            elif my_arg[0] not in self.class_dict:
+                print("** class doesn't exist **")
+            else:
+                my_list = []
+                my_objects = storage.all(self)
+                for key, values in my_objects.items():
+                    my_key = key.split(".")
+                    if my_key[0] == my_arg[0]:
+                        my_list.append(str(values))
+                print(my_list)
 
     def do_destroy(self, arg):
         """Deletes an instance based on the class name and
@@ -105,7 +113,7 @@ class HBNBCommand(cmd.Cmd):
             return
 
         class_name = args[0]
-        if class_name not in self.__classes:
+        if class_name not in self.class_dict:
             print("** class doesn't exist **")
             return
 
@@ -136,7 +144,7 @@ class HBNBCommand(cmd.Cmd):
         if len(argl) == 0:
             print("** class name missing **")
             return False
-        if argl[0] not in HBNBCommand.__classes:
+        if argl[0] not in HBNBCommand.class_dict:
             print("** class doesn't exist **")
             return False
         if len(argl) == 1:
@@ -172,6 +180,93 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     obj.__dict__[k] = v
         storage.save()
+
+    def do_count(self, arg):
+        'Count all instances based on class name.'
+        count = 0
+        my_arg = arg.split(" ")
+        if not arg:
+            # Si aucun argument n'est fourni, affichez le nombre total d'instances
+            my_objects = storage.all()
+            for key, values in my_objects.items():
+                count += 1
+            print(count)
+        elif len(my_arg) == 1:
+            # Si un seul argument est fourni, vérifiez si la classe existe et affichez le nombre d'instances
+            if my_arg[0] not in self.class_dict:
+                print("** class doesn't exist **")
+                return
+            my_objects = storage.all()
+            for key, values in my_objects.items():
+                my_key = key.split(".")
+                if my_key[0] == my_arg[0]:
+                    count += 1
+            print(count)
+        else:
+            # Si plus d'un argument est fourni, affichez un message d'erreur
+            print("Too many arguments")
+
+    def do_command(self, class_name, method, arg):
+        """Handle a command for a given class."""
+        the_class = class_name.capitalize()
+        my_arg = arg.split(".")
+        if my_arg[1] == 'all()':
+            method(arg)  # Here we only need to pass the argument 'all', the_class is not required
+        elif my_arg[1] == 'count()':
+            method(arg)  # Similarly, here we only need to pass the argument 'count', the_class is not required
+        else:
+            prim = my_arg[1].find('("')
+            seco = my_arg[1].find('")')
+            my_arg1 = my_arg[1][0:prim]
+            my_arg2 = my_arg[1][prim + 2: seco]
+            if my_arg1 == "show":
+                param = f"{the_class} {my_arg2}"
+                self.do_show(param)  # Use self instead of HBNBCommand
+            elif my_arg1 == "destroy":
+                param = f"{the_class} {my_arg2}"
+                self.do_destroy(param)  # Use self instead of HBNBCommand
+            else:
+                my_arg3 = arg.replace('"', ' ').split(',')
+                if len(my_arg3) == 0:
+                    print("** instance id missing **")
+                elif len(my_arg3) == 1:
+                    print("** attribute name missing **")
+                elif len(my_arg3) == 2:
+                    print("** value missing **")
+                else:
+                    param = f"{the_class} {my_arg3[0][9:]} {my_arg3[1]} {my_arg3[2][1:-1]}"
+                    self.do_update(param)
+
+    def do_BaseModel(self, arg):
+        """Handle commands for BaseModel."""
+        if arg == "":
+            print("** missing action **")
+        else:
+            self.do_command("BaseModel", self.do_all, arg)
+
+    def do_User(self, arg):
+        """Handle commands for User."""
+        self.do_command("User", self.do_all, arg)
+
+    def do_State(self, arg):
+        """Handle commands for State."""
+        self.do_command("State", self.do_all, arg)
+
+    def do_City(self, arg):
+        """Handle commands for City."""
+        self.do_command("City", self.do_all, arg)
+
+    def do_Amenity(self, arg):
+        """Handle commands for Amenity."""
+        self.do_command("Amenity", self.do_all, arg)
+
+    def do_Place(self, arg):
+        """Handle commands for Place."""
+        self.do_command("Place", self.do_all, arg)
+
+    def do_Review(self, arg):
+        """Handle commands for Review."""
+        self.do_command("Review", self.do_all, arg)
 
 
 if __name__ == '__main__':
